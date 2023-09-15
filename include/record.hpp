@@ -1,4 +1,5 @@
 #include <string>
+# include "definitions.hpp"
 using namespace Record;
 
 typedef struct {
