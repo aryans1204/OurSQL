@@ -1,7 +1,6 @@
 #include <string>
-using namespace std;
-
-typedef unsigned int uint;
+# include "definitions.hpp"
+using namespace Record;
 
 typedef struct {
   //header
@@ -11,12 +10,12 @@ typedef struct {
   //record body
   std::string date; //the data type ios meant to be changed from string to something that holds 3 bytes
   uint teamID;
-  short pts;
+  short uint pts;
   float fg_pct;
   float ft_pct;
   float fg3_pct;
-  short ast;
-  short reb;
+  short uint ast;
+  short uint reb;
   bool win;
 
 } Record;
