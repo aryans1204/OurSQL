@@ -19,6 +19,22 @@ Scenario 3: Upon deletion of an internal node, min no of keys not satisfied => m
 # include <iostream>
 using namespace std;
 
+bool flag_is_leaf = 0;
+bool flag_is_internal = 0;
+
+// write a fucntion getK to get the key of node to be deleted
+
+bool deleteRecord(uint)
+{
+            int index = getK(key);
+
+            // check if key to be deleted is in present node
+            if(karr[index] = key && index < totK)
+            {
+                 if(bool_is_leaf)       
+            }
+            
+}
 
 
 
