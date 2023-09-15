@@ -10,12 +10,12 @@ typedef struct {
   //record body
   std::string date; //the data type ios meant to be changed from string to something that holds 3 bytes
   uint teamID;
-  short uint pts;
+  shortuint pts;
   float fg_pct;
   float ft_pct;
   float fg3_pct;
-  short uint ast;
-  short uint reb;
+  shortuint ast;
+  shortuint reb;
   bool win;
 
 } Record;

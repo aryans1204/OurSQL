@@ -1,7 +1,7 @@
 #include <vector>
 #include <map>
 #include <include/record.hpp>
-
+# include "definitions.hpp"
 using namespace BTree;
 
 class BNode {
@@ -22,7 +22,7 @@ class BTree {
 
   public:
     BTree(uint n); //constructor for BTree
-    uint insertRecord(uint teamID, short uint pts, float fg_pct, float ft_pct, float fg3_pct, short uint ast, short uint reb, bool win); //insert a new record and return it
+    uint insertRecord(uint teamID, shortuint pts, float fg_pct, float ft_pct, float fg3_pct, shortuint ast, shortuint reb, bool win); //insert a new record and return it
     bool deleteRecord(uint key); //delete a record based on its key, returns True if sucessful delete
     Record::Record* queryRecord(uint key); //return back a record based on its key
     bool updateRecord(uint key, Record::Record* newRec); //update an existing record based on newRec value
