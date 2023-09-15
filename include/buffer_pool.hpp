@@ -1,11 +1,7 @@
 #include <vector>
-<<<<<<< HEAD
 
-using namespace std;
-=======
 # include "definitions.hpp"
 using namespace BufferPool;
->>>>>>> 79748290bd2346e66f24694275cab9c7b9e0f498
 
 typedef unsigned int uint;
 typedef unsigned char uchar;
