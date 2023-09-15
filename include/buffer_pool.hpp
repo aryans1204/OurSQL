@@ -3,8 +3,6 @@
 # include "definitions.hpp"
 using namespace BufferPool;
 
-typedef unsigned int uint;
-typedef unsigned char uchar;
 
 class BufPool{
 private:
