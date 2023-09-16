@@ -67,7 +67,7 @@ int BufPool::getNumAvailBlks()
 bool BufPool::allocateBlk() {       // check if there are still avail blocks & allocates block to buffer pool if true
     if (numAvailBlks > 0) {
         blkPtr = memPoolPtr + (numAllocBlks * blkSize);     // increment blkPtr by number of allocated blocks
-        bufPoolUsedBlks+=blkSize;
+        bufPoolUsedBlks += blkSize;
         numAvailBlks -= 1;          // decrement the available number of blocks by 1
         numAllocBlks += 1;          // increment the number of allocated blocks by 1
         curBlkSizeUsed = 0;
@@ -81,7 +81,7 @@ bool BufPool::allocateBlk() {       // check if there are still avail blocks & a
 
 // Since records are same size & large number of records to insert, easier to insert records not in sequence
 tuple<void *, uint> BufPool::writeRecord(uint recordSize) {
-    if(blkSize < (curBlkSizeUsed + recordSize) or numAllocBlks == 0){// check if block has no space to insert record or if there are no existing blocks in buffer pool
+    if(blkSize < (curBlkSizeUsed + recordSize) || numAllocBlks == 0){// check if block has no space to insert record or if there are no existing blocks in buffer pool
         if (!allocateBlk())
             throw "Unable to reserve space as no free space in blocks or no blocks can be allocated";
     }
