@@ -1,3 +1,6 @@
+#ifndef BTREE_H
+#define BTREE_H
+
 #include <vector>
 #include <map>
 #include <include/record.hpp>
@@ -29,3 +32,4 @@ class BTree {
     ~BTree(); //destructor;  
 };
 
+#endif

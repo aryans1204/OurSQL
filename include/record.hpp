@@ -1,3 +1,6 @@
+#ifndef RECORD_H
+#define RECORD_H
+
 #include <string>
 # include "definitions.hpp"
 using namespace Record;
@@ -20,4 +23,4 @@ typedef struct {
 
 } Record;
 
-
+#endif

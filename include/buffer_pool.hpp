@@ -1,5 +1,8 @@
-#include <vector>
+#ifndef BUFFERPOOL_H
+#define BUFFERPOOL_H
 
+#include <vector>
+#include <iostream>
 # include "definitions.hpp"
 using namespace BufferPool;
 
@@ -39,3 +42,6 @@ public:
 
     int getNumAvailBlks();
 };
+
+
+#endif

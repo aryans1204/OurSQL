@@ -1,4 +1,9 @@
+#include <vector>
+#include <iostream>
 #include "buffer_pool.hpp"
+#include "definitions.hpp"
+
+using namespace std;
 
 BufPool::BufPool(uint bufPoolSize, uint blkSize)
 {
