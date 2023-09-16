@@ -16,25 +16,26 @@ Scenario 2: Internal node
 Scenario 3: Upon deletion of an internal node, min no of keys not satisfied => merge the neighbor
 */
 
-# include <iostream>
-# include "definitions.hpp"
-using namespace std;
+#include <iostream>
+#include <btree.hpp>
+#include "record.hpp"
+#include "definitions.hpp"
+#include <algorithm>
 
-bool flag_is_leaf = 0;
-bool flag_is_internal = 0;
-
-// write a fucntion getK to get the key of node to be deleted
-
-bool deleteRecord(uint)
-{
-            int index = getK(key);
-
-            // check if key to be deleted is in present node
-            if(karr[index] = key && index < totK)
-            {
-                 if(bool_is_leaf)       
-            }
-            
+Record::Record* BTree::BTree::queryRecord(uint key) {
+    BNode* temp = this->root;
+    while (!temp->isLeaf) {
+        if (temp == this->root) {
+            temp = root->keys[0] < key ? root->children[0] ? root->children[1];
+        }
+        else {
+            int ind = std::upper_bound(temp->keys.begin(), temp->keys.end(), key) - temp->keys.begin();
+            if (key == temp->keys[ind]) temp = temp->children[ind+1];
+            else temp = temp->children[ind];
+        }
+    }
+    if (temp->record.find(key) == temp->record.end()) return nullptr;
+    else return temp->record[key];
 }
 
 
