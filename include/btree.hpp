@@ -8,7 +8,7 @@ class BNode {
   public:
     uint n;  //size of the BNode
     bool isLeaf; //whether node is leaf node
-    std::vector<uint>& keys; //vector of keys, should be of size n+1
+    std::vector<uint>& keys; //vector of keys, should be of size n
     std::vector<BNode*>& children; //vector of children pointers, of size n+1
     BNode* parent;  //parent BNode
     std::map<uint, Record::Record*> record; //map for key to record, only relevant for leaf
