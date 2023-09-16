@@ -4,13 +4,14 @@
 #include "definitions.hpp"
 namespace BTree {
 
-typedef struct BNode {
+class BNode {
   public:
     uint n;  //size of the BNode
     bool isLeaf; //whether node is leaf node
     std::vector<uint>& keys; //vector of keys, should be of size n+1
     std::vector<BNode*>& children; //vector of children pointers, of size n+1
     BNode* parent;  //parent BNode
+    std::map<uint, Record::Record*> record; //map for key to record, only relevant for leaf
 
     BNode(uint n) {
       this->n = n;
@@ -20,7 +21,14 @@ typedef struct BNode {
       this->children = b;
       this->parent = nullptr;
       this->isLeaf = false;
-    } 
+    }
+
+    friend bool operator<(const BNode& a, const BNode& b) {
+      return a.keys[0] < b.keys[0];
+    }
+    friend bool operator<=(const BNode& a, const BNode& b) {
+      return a.keys[0] <= b.keys[0];
+    }
 };
 
 class BTree {
