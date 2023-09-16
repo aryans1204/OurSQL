@@ -16,7 +16,6 @@ private:
     std::size_t blkSize;
     std::size_t bufPoolUsedBlks;
     std::size_t bufPoolUsedRecords;
-    std::size_t totalBlkSizeUsed;
     std::size_t curBlkSizeUsed;
 
     int numAllocBlks;
@@ -35,8 +34,6 @@ public:
 
     std::size_t getMemPoolUsedRecords();
 
-    std::size_t getTotalBlkSizeUsed();
-
     std::size_t getCurBlkSizeUsed();
 
     int getNumAllocBlks();
@@ -44,6 +41,8 @@ public:
     int getNumAvailBlks();
 
     bool allocateBlk();
+
+    bool deleteRecord(void *blockAddress, uint relOffset, std::size_t deletionSize);
 };
 
 

@@ -14,7 +14,6 @@ BufPool::BufPool(size_t bufPoolSize, size_t blkSize)
 
     this->bufPoolUsedBlks = 0;
     this->bufPoolUsedRecords = 0;
-    this->totalBlkSizeUsed = 0;
     this->curBlkSizeUsed = 0;
     this->numAllocBlks = 0;
     this->numAvailBlks = bufPoolSize / blkSize;
@@ -50,10 +49,6 @@ size_t BufPool::getMemPoolUsedRecords()
     return bufPoolUsedRecords;
 }
 
-size_t BufPool::getTotalBlkSizeUsed()
-{
-    return totalBlkSizeUsed;
-}
 
 size_t BufPool::getCurBlkSizeUsed(){
     return curBlkSizeUsed;
@@ -70,5 +65,30 @@ int BufPool::getNumAvailBlks()
 }
 
 bool BufPool::allocateBlk(){
-    
+
+}
+
+bool BufPool::deleteRecord(void *blockAddress, uint relOffset, std::size_t deletionSize){
+    try {
+        // remove block by setting values to null
+        void *deletionAddress = (char *)blockAddress + relOffset;
+        std::memset(deletionAddress, '\0', deletionSize);
+
+        bufPoolUsedRecords -= deletionSize;
+
+        //check if block is empty
+        uchar tempBlk[blkSize];
+        std::memset(tempBlk, '\0', blkSize);
+        if (memcmp(blockAddress, tempBlk, blkSize)==0){
+            bufPoolUsedBlks -= blkSize;
+            numAllocBlks--;
+        }
+
+        return true;
+
+    }
+    catch (...){
+        cout << "Error: Unable to delete data found at memory address " << blockAddress << " with relative offset " << relOffset << "." << '\n';
+        return false;
+    }
 }
