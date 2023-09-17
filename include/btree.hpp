@@ -1,5 +1,9 @@
+#ifndef BTREE_HEADER
+#define BTREE_HEADER
+
 #include <vector>
 #include <map>
+#include <unordered_set>
 #include "record.hpp"
 #include "definitions.hpp"
 namespace BTree {
@@ -11,7 +15,7 @@ class BNode {
     std::vector<uint>& keys; //vector of keys, should be of size n
     std::vector<BNode*>& children; //vector of children pointers, of size n+1
     BNode* parent;  //parent BNode
-    std::map<uint, Record::Record*> record; //map for key to record, only relevant for leaf
+    std::map<uint, std::vector<Record::Record*>> record; //map for key to record, only relevant for leaf
 
     BNode(uint n) {
       this->n = n;
@@ -36,16 +40,18 @@ class BTree {
   private:
     BNode* root; //root of the BTree
     uint n;
+    void balanceTree();  //function to balanceTree after insertion and deletion, upddates the root accordingly
 
   public:
     BTree(uint n); //constructor for BTree
     uint insertRecord(Record::Record& record); //insert a new record and return it
     bool deleteRecord(uint key); //delete a record based on its key, returns True if sucessful delete
-    Record::Record* queryRecord(uint key); //return back a record based on its key
-    bool updateRecord(uint key, Record::Record* newRec); //update an existing record based on newRec value
+    std::vector<Record::Record*> queryRecord(uint key); //return back a record based on its key
+    std::vector<Record::Record*> queryRecord(uint lower, uint upper);  //overloaded queryRecord with range based queries
     ~BTree(); //destructor;  
 };
 
 }
+#endif
 
 

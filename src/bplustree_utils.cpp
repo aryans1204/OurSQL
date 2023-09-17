@@ -16,17 +16,18 @@ Scenario 2: Internal node
 Scenario 3: Upon deletion of an internal node, min no of keys not satisfied => merge the neighbor
 */
 
+#include "definitions.hpp"
 #include <iostream>
+#include <unordered_set>
 #include <btree.hpp>
 #include "record.hpp"
-#include "definitions.hpp"
 #include <algorithm>
 
-Record::Record* BTree::BTree::queryRecord(uint key) {
+std::vector<Record::Record*> BTree::BTree::queryRecord(uint key) {
     BNode* temp = this->root;
     while (!temp->isLeaf) {
         if (temp == this->root) {
-            temp = root->keys[0] < key ? root->children[0] ? root->children[1];
+            temp = root->keys[0] < key ? root->children[1] : root->children[0];
         }
         else {
             int ind = std::upper_bound(temp->keys.begin(), temp->keys.end(), key) - temp->keys.begin();
@@ -34,9 +35,43 @@ Record::Record* BTree::BTree::queryRecord(uint key) {
             else temp = temp->children[ind];
         }
     }
-    if (temp->record.find(key) == temp->record.end()) return nullptr;
+    std::vector<Record::Record*> a;
+    if (temp->record.find(key) == temp->record.end()) return a;
     else return temp->record[key];
 }
+
+std::vector<Record::Record*> BTree::BTree::queryRecord(uint lower, uint upper) {
+    BNode* tempL = this->root;
+    while (!tempL->isLeaf) {
+        if (tempL == this->root) {
+            tempL = root->keys[0] < lower ? root->children[1] : root->children[0];
+        }
+        else {
+            int ind2 = std::upper_bound(tempL->keys.begin(), tempL->keys.end(), lower) - tempL->keys.begin();
+            if (lower == tempL->keys[ind2]) tempL = tempL->children[ind2+1];
+            else tempL = tempL->children[ind2];        
+        }
+    }
+    //tempL and tempR are both leaf nodes where the lower and upper keys may exist
+    std::vector<Record::Record*> ans;
+    int i = 0;
+    std::vector<Record::Record*> c;
+    while (tempL && tempL->keys[i] <= upper) {
+        if (tempL->keys[i] < lower) {
+            i++;
+            continue;
+        }
+        c = tempL->record[tempL->keys[i++]];
+        ans.insert(ans.end(), c.begin(), c.end());
+        if (i >= tempL->keys.size()) {
+            tempL = tempL->children[i];
+            i = 0;
+        }
+    }
+    return ans;
+}
+
+
 
 
 
