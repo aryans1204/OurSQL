@@ -22,8 +22,9 @@ Scenario 3: Upon deletion of an internal node, min no of keys not satisfied => m
 #include <btree.hpp>
 #include "record.hpp"
 #include <algorithm>
+#include <cmath>
 
-std::vector<Record::Record*> BTree::BTree::queryRecord(uint key) {
+std::vector<Record::Record&> BTree::BTree::queryRecord(uint key) {
     BNode* temp = this->root;
     while (!temp->isLeaf) {
         if (temp == this->root) {
@@ -40,7 +41,7 @@ std::vector<Record::Record*> BTree::BTree::queryRecord(uint key) {
     else return temp->record[key];
 }
 
-std::vector<Record::Record*> BTree::BTree::queryRecord(uint lower, uint upper) {
+std::vector<Record::Record&> BTree::BTree::queryRecord(uint lower, uint upper) {
     BNode* tempL = this->root;
     while (!tempL->isLeaf) {
         if (tempL == this->root) {
@@ -53,9 +54,9 @@ std::vector<Record::Record*> BTree::BTree::queryRecord(uint lower, uint upper) {
         }
     }
     //tempL and tempR are both leaf nodes where the lower and upper keys may exist
-    std::vector<Record::Record*> ans;
+    std::vector<Record::Record&> ans;
     int i = 0;
-    std::vector<Record::Record*> c;
+    std::vector<Record::Record&> c;
     while (tempL && tempL->keys[i] <= upper) {
         if (tempL->keys[i] < lower) {
             i++;
@@ -71,6 +72,97 @@ std::vector<Record::Record*> BTree::BTree::queryRecord(uint lower, uint upper) {
     return ans;
 }
 
+bool BTree::BTree::insertRecord(Record::Record &record, uint key) {
+    if (root == nullptr) {
+        root = new BNode(this->n);
+        root->keys.push_back(key);
+        root->isLeaf = true;
+        std::vector<Record::Record&> a;
+        root->record[key] = a;
+        root->record[key].push_back(record);
+        return true;
+    }
+    BNode* temp = this->root;
+    while (!temp->isLeaf) {
+        if (temp == this->root) {
+            temp = root->keys[0] < key ? root->children[1] : root->children[0];
+        }
+        else {
+            int ind = std::upper_bound(temp->keys.begin(), temp->keys.end(), key) - temp->keys.begin();
+            if (key == temp->keys[ind]) temp = temp->children[ind+1];
+            else temp = temp->children[ind];
+        }
+    }
+    temp->keys.push_back(key);
+    sort(temp->keys.begin(), temp->keys.end());
+    if (temp->record.find(key) == temp->record.end()) {
+        std::vector<Record::Record&> a;
+        temp->record[key] = a;
+    }
+    temp->record[key].push_back(record);
+    this->balanceTree(key, true);
+    return true;
+}
+
+void BTree::BTree::balanceTree(uint key, bool leaf) {
+    BNode* temp = this->root;
+    while (!temp->isLeaf) {
+        if (temp == this->root) {
+            temp = root->keys[0] < key ? root->children[1] : root->children[0];
+        }
+        else {
+            int ind = std::upper_bound(temp->keys.begin(), temp->keys.end(), key) - temp->keys.begin();
+            if (key == temp->keys[ind]) temp = temp->children[ind+1];
+            else temp = temp->children[ind];
+        }
+    }
+    if (temp->keys.size() > this->n) {
+        int part = ceil((this->n+1)/2);
+        BNode* left = new BNode(this->n);
+        left->isLeaf = leaf;
+        BNode* right = new BNode(this->n);
+        right->isLeaf = leaf;
+        left->keys.insert(left->keys.begin(), temp->keys.begin(), temp->keys.begin()+part);
+        right->keys.insert(right->keys.begin(), temp->keys.begin()+part, temp->keys.end());
+        if (leaf) {
+            for (auto k : left->keys) {
+            left->record[k] = temp->record[k];
+            }
+            for (auto k : right->keys) {
+                right->record[k] = temp->record[k];
+            }
+            left->children[left->children.size()-1] = right;
+            right->children[0] = left;
+            if (temp->children[0] != nullptr) left->children[0] = temp->children[0];
+        }
+        
+        if (temp->parent == nullptr) {
+            BNode* sub = new BNode(this->n);
+            sub->keys.push_back(right->keys[0]);
+            root = sub;
+            left->parent = root;
+            right->parent = root;
+            root->children[0] = left;
+            root->children[1] = right;
+            delete temp;
+            delete sub;
+            return;
+        }
+        int cand = right->keys[0];
+        right->parent = temp->parent;
+        left->parent = temp->parent;
+        while (temp != root) {
+            temp = temp->parent;
+            temp->keys.push_back(cand);
+            sort(temp->keys.begin(), temp->keys.end());
+
+        }
+
+    }
+    else {
+        return;
+    }    
+}
 
 
 
