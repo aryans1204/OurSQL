@@ -100,22 +100,11 @@ bool BTree::BTree::insertRecord(Record::Record &record, uint key) {
         temp->record[key] = a;
     }
     temp->record[key].push_back(record);
-    this->balanceTree(key, true);
+    this->balanceTree(true, temp);
     return true;
 }
 
-void BTree::BTree::balanceTree(uint key, bool leaf) {
-    BNode* temp = this->root;
-    while (!temp->isLeaf) {
-        if (temp == this->root) {
-            temp = root->keys[0] < key ? root->children[1] : root->children[0];
-        }
-        else {
-            int ind = std::upper_bound(temp->keys.begin(), temp->keys.end(), key) - temp->keys.begin();
-            if (key == temp->keys[ind]) temp = temp->children[ind+1];
-            else temp = temp->children[ind];
-        }
-    }
+void BTree::BTree::balanceTree(bool leaf, BNode* temp) {
     if (temp->keys.size() > this->n) {
         int part = ceil((this->n+1)/2);
         BNode* left = new BNode(this->n);
@@ -124,9 +113,11 @@ void BTree::BTree::balanceTree(uint key, bool leaf) {
         right->isLeaf = leaf;
         left->keys.insert(left->keys.begin(), temp->keys.begin(), temp->keys.begin()+part);
         right->keys.insert(right->keys.begin(), temp->keys.begin()+part, temp->keys.end());
+        left->children.insert(left->children.begin(), temp->children.begin(), temp->children.begin()+part);
+        right->children.insert(right->children.begin(), right->children.begin()+part, right->children.end());
         if (leaf) {
             for (auto k : left->keys) {
-            left->record[k] = temp->record[k];
+                left->record[k] = temp->record[k];
             }
             for (auto k : right->keys) {
                 right->record[k] = temp->record[k];
@@ -135,27 +126,28 @@ void BTree::BTree::balanceTree(uint key, bool leaf) {
             right->children[0] = left;
             if (temp->children[0] != nullptr) left->children[0] = temp->children[0];
         }
-        
+    
+        BNode* sub = new BNode(this->n);
+        sub->keys.push_back(right->keys[0]);
         if (temp->parent == nullptr) {
-            BNode* sub = new BNode(this->n);
-            sub->keys.push_back(right->keys[0]);
             root = sub;
             left->parent = root;
             right->parent = root;
             root->children[0] = left;
             root->children[1] = right;
-            delete temp;
-            delete sub;
-            return;
         }
-        int cand = right->keys[0];
+        
+        delete temp;
+        delete sub;
+        uint cand = right->keys[0];
         right->parent = temp->parent;
         left->parent = temp->parent;
-        while (temp != root) {
+        if (temp != root) {
             temp = temp->parent;
             temp->keys.push_back(cand);
             sort(temp->keys.begin(), temp->keys.end());
-
+            if (temp->keys.size() <= this->n) return;
+            balanceTree(false, temp);
         }
 
     }

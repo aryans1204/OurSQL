@@ -40,7 +40,7 @@ class BTree {
   private:
     BNode* root; //root of the BTree
     uint n;
-    void balanceTree(uint key, bool leaf);  //function to balanceTree after insertion and deletion, upddates the root accordingly
+    void balanceTree(bool leaf, BNode* temp);  //function to balanceTree after insertion and deletion, upddates the root accordingly
 
   public:
     BTree(uint n); //constructor for BTree
