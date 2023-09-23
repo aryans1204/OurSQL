@@ -1,7 +1,7 @@
 #include <vector>
 
 # include "definitions.hpp"
-using namespace BufferPool;
+namespace BufferPool {
 
 
 class BufPool{
@@ -39,3 +39,5 @@ public:
 
     int getNumAvailBlks();
 };
+
+}

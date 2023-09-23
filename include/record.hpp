@@ -1,6 +1,7 @@
 #include <string>
-# include "definitions.hpp"
-using namespace Record;
+#include "definitions.hpp"
+
+namespace Record {
 
 typedef struct {
   //header
@@ -19,5 +20,7 @@ typedef struct {
   bool win;
 
 } Record;
+
+}
 
 
