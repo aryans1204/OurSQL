@@ -17,12 +17,13 @@ Scenario 3: Upon deletion of an internal node, min no of keys not satisfied => m
 */
 
 #include "definitions.hpp"
+#include <set>
 #include <iostream>
-#include <unordered_set>
 #include <btree.hpp>
 #include "record.hpp"
 #include <algorithm>
 #include <cmath>
+
 
 
 std::vector<Record::Record&> BTree::BTree::queryRecord(uint key) {
@@ -159,6 +160,44 @@ void BTree::BTree::balanceTree(bool leaf, BNode* temp) {
     }    
 }
 
+void BTree::BTree::display() {
+    std::vector<uint> a = this->root->keys;
+    for (auto k : a) {
+        std::cout << "||" << " " << k << " " << "||->";
+    }
+    std::cout << std::endl;
+}
 
+int BTree::BTree::height(BNode* l) {
+    int ans = 0;
+    if (l == nullptr) l = this->root;
+    if (l->isLeaf) return 1;
+    for (auto p : l->children) {
+        ans = max(ans, height(p));
+    }
+    return ans+1;
+    
+}
+struct comp{
+    bool operator()(const BTree::BNode* a, const BTree::BNode* b) {
 
+    }
+};
+int BTree::BTree::numNodes() {
+    int ans = 1;
+    BNode* l = this->root;
+    while (!l->isLeaf) {
+        std::set<BNode*> a(l->children.begin(), l->children.end());
+        ans += a.size();    
+    }
+    if (l == nullptr) l = this->root;
+    if (l->isLeaf) {
+        while (l->children[l->children.size()-1] != nullptr) {
+            ans++;
+            l = l->children[l->children.size()-1];
+        }
+        return ans;
+    }
+    return ans;
 
+}
