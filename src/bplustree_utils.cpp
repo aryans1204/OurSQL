@@ -106,7 +106,9 @@ bool BTree::BTree::insertRecord(Record::Record &record, uint key) {
 
 void BTree::BTree::balanceTree(bool leaf, BNode* temp) {
     if (temp->keys.size() > this->n) {
-        int part = ceil((this->n+1)/2);
+        int part;
+        if (leaf) part = ceil((this->n+1)/2);
+        else part = ceil(this->n/2);
         BNode* left = new BNode(this->n);
         left->isLeaf = leaf;
         BNode* right = new BNode(this->n);
