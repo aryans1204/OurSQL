@@ -24,6 +24,7 @@ Scenario 3: Upon deletion of an internal node, min no of keys not satisfied => m
 #include <algorithm>
 #include <cmath>
 
+
 std::vector<Record::Record&> BTree::BTree::queryRecord(uint key) {
     BNode* temp = this->root;
     while (!temp->isLeaf) {
