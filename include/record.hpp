@@ -1,3 +1,6 @@
+#ifndef RECORD_H
+#define RECORD_H
+
 #include <string>
 #include "definitions.hpp"
 
@@ -20,7 +23,6 @@ typedef struct {
   bool win;
 
 } Record;
+};
 
-}
-
-
+#endif

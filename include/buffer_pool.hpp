@@ -1,43 +1,50 @@
-#include <vector>
+#ifndef BUFFERPOOL_H
+#define BUFFERPOOL_H
 
+#include <vector>
+#include <iostream>
 # include "definitions.hpp"
 namespace BufferPool {
 
 
 class BufPool{
 private:
-    uchar *memPoolPtr;
-    uchar *blkPtr;
+    void *memPoolPtr;
+    void *blkPtr;
 
-    uint bufPoolSize;
-    uint blkSize;
-    uint bufPoolUsedBlks;
-    uint bufPoolUsedRecords;
-    uint curBlkUsed;
+    std::size_t bufPoolSize;
+    std::size_t blkSize;
+    std::size_t bufPoolUsedBlks;
+    std::size_t bufPoolUsedRecords;
+    std::size_t curBlkSizeUsed;
 
     int numAllocBlks;
     int numAvailBlks;
 
 public:
-    BufPool(uint bufPoolSize, uint blkSize);
+    BufPool(size_t bufPoolSize, size_t blkSize);
 
     ~BufPool();
 
-    uint getBlkSize(){
-        return blkSize;
-    }
+    std::size_t getBlkSize();
 
-    uint getBufPoolSize();
+    std::size_t getBufPoolSize();
 
-    int getMemPoolUsedBlks();
+    std::size_t getMemPoolUsedBlks();
 
-    int getMemPoolUsedRecords();
+    std::size_t getMemPoolUsedRecords();
 
-    int getCurBlkUsed();
+    std::size_t getCurBlkSizeUsed();
 
     int getNumAllocBlks();
 
     int getNumAvailBlks();
-};
 
-}
+    bool allocateBlk();
+
+    tuple<void *, uint> writeRecord(uint recordSize);
+
+    bool deleteRecord(void *blockAddress, uint relOffset, std::size_t deletionSize);
+};
+};
+#endif

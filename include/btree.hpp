@@ -1,3 +1,4 @@
+
 #ifndef BTREE_HEADER
 #define BTREE_HEADER
 
@@ -50,8 +51,5 @@ class BTree {
     std::vector<Record::Record&> queryRecord(uint lower, uint upper);  //overloaded queryRecord with range based queries
     ~BTree(); //destructor;  
 };
-
 }
 #endif
-
-
