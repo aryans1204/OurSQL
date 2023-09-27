@@ -2,8 +2,9 @@
 #define RECORD_H
 
 #include <string>
-# include "definitions.hpp"
-namespace Record{
+#include "definitions.hpp"
+
+namespace Record {
 
 typedef struct {
   //header

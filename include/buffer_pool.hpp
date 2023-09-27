@@ -4,7 +4,7 @@
 #include <vector>
 #include <iostream>
 # include "definitions.hpp"
-namespace BufferPool{
+namespace BufferPool {
 
 
 class BufPool{
@@ -47,6 +47,4 @@ public:
     bool deleteRecord(void *blockAddress, uint relOffset, std::size_t deletionSize);
 };
 };
-
-
 #endif
