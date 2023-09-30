@@ -41,6 +41,8 @@ public:
 
     int getNumAvailBlks();
 
+    bool deleteRecord(void *blockAddress, uint relOffset, std::size_t deletionSize);
+
     bool allocateBlk();
 
     tuple<void *, uint> writeRecord(uint recordSize);
