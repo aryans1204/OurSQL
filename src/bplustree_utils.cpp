@@ -189,3 +189,6 @@ int BTree::BTree::height(BNode* l) {
 int BTree::BTree::numNodes() {
     return this->nodes;
 }
+
+
+
