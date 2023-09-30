@@ -3,8 +3,9 @@
 
 #include <vector>
 #include <iostream>
-# include "definitions.hpp"
-//using namespace BufferPool;
+#include "definitions.hpp"
+
+namespace BufferPool {
 
 
 class BufPool{
@@ -40,10 +41,13 @@ public:
 
     int getNumAvailBlks();
 
+    bool deleteRecord(void *blockAddress, uint relOffset, std::size_t deletionSize);
+
     bool allocateBlk();
+
+    tuple<void *, uint> writeRecord(uint recordSize);
 
     bool deleteRecord(void *blockAddress, uint relOffset, std::size_t deletionSize);
 };
-
-
+};
 #endif
