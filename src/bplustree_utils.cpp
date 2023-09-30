@@ -101,7 +101,7 @@ bool BTree::BTree::insertRecord(Record::Record record, uint key) {
         }
     }
     temp->keys.push_back(key);
-    sort(temp->keys.begin(), temp->keys.end());
+    std::sort(temp->keys.begin(), temp->keys.end());
     if (temp->record.find(key) == temp->record.end()) {
         std::vector<Record::Record> a;
         temp->record[key] = a;
@@ -134,7 +134,16 @@ void BTree::BTree::balanceTree(bool leaf, BNode* temp) {
             }
             left->children[left->children.size()-1] = right;
             right->children[0] = left;
-            if (temp->children[0] != nullptr) left->children[0] = temp->children[0];
+            left->children[0] = temp->children[0];
+            right->children[right->children.size()-1] = temp->children[temp->children.size()-1];
+        }
+        else {
+            for (auto p : left->children) {
+                p->parent = left;
+            }
+            for (auto p : right->children) {
+                p->parent = right;
+            }
         }
     
         BNode* sub = new BNode(this->n);
@@ -146,9 +155,11 @@ void BTree::BTree::balanceTree(bool leaf, BNode* temp) {
             right->parent = root;
             root->children[0] = left;
             root->children[1] = right;
+            delete temp;
+            delete sub;
+            return;
         }
-        
-        delete temp;
+         
         delete sub;
         uint cand = right->keys[0];
         right->parent = temp->parent;
@@ -156,10 +167,10 @@ void BTree::BTree::balanceTree(bool leaf, BNode* temp) {
         if (temp != root) {
             temp = temp->parent;
             temp->keys.push_back(cand);
-            sort(temp->keys.begin(), temp->keys.end());
-            if (temp->keys.size() <= this->n) return;
+            std::sort(temp->keys.begin(), temp->keys.end());
             balanceTree(false, temp);
         }
+        delete temp;
 
     }
     else {
