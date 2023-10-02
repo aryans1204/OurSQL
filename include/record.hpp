@@ -4,8 +4,6 @@
 #include <string>
 #include "definitions.hpp"
 
-namespace Records {
-
 typedef struct {
   //header
   //uint timestamp;
@@ -23,6 +21,5 @@ typedef struct {
   bool win;
 
 } Record;
-}
 
 #endif

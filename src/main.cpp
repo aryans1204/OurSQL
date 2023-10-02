@@ -1,4 +1,5 @@
 #include "buffer_pool.hpp"
+#include "btree.hpp"
 #include "record.hpp"
 #include <iostream>
 #include <fstream>
@@ -7,11 +8,12 @@
 #include <tuple>
 
 using namespace BufferPool;
-using namespace Records;
 using namespace std;
 
 int main() {
     BufPool bufPool(104857600, 400);    //pool size = 100MB, block size = 400B
+
+    BTree::BTree BTree(10);
 
     fstream newfile;
 
@@ -38,16 +40,25 @@ int main() {
 
             void *rcdAdr = (uchar *)get<0>(dataRecord) + get<1>(dataRecord);
             memcpy(rcdAdr, &record, sizeof(record));
+            //BTree.insertRecord(record, record.teamID);
             //cout << rcdAdr << " " << record.teamID << '\n';
         }
 
         cout << "<------------------- Data file read ended ------------------->" << "\n" << "\n";
 
-        cout << "<------------------- Database Statistics ------------------->" << "\n";
+        cout << "<------------------- Storage Statistics (Experiment 1) ------------------->" << "\n";
         cout << "1. Number of records: " << bufPool.getNumRecords() << "\n";
         cout << "2. Size of a record: " << sizeof(Record) << "\n";
         cout << "3. Number of records stored in a block: " << bufPool.getBlkSize()/sizeof(Record) << "\n";
-        cout << "4. Number of allocated blocks: " << bufPool.getNumAllocBlks() << "\n";
+        cout << "4. Number of allocated blocks: " << bufPool.getNumAllocBlks() << "\n\n";
+
+        cout << "<------------------- B+ Tree Statistics (Experiment 2) ------------------->" << "\n";
+        cout << "1. Parameter n of B+ tree: " << BTree.getN() << "\n";
+        cout << "2. Number of nodes of the B+ tree: " << BTree.numNodes() << "\n";
+        cout << "3. Number of levels of the B+ tree: " << BTree.height(nullptr) << "\n";
+        cout << "4. Content of the root node (only the keys): ";
+        BTree.display();
+        cout << "\n";
 
         newfile.close();    //close the file object.
     }
