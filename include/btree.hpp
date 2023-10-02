@@ -11,21 +11,19 @@ namespace BTree {
 
 class BNode {
   public:
-    uint n;  //size of the BNode
+    int n=10;  //size of the BNode
     bool isLeaf; //whether node is leaf node
-    std::vector<uint>& keys; //vector of keys, should be of size n
-    std::vector<BNode*>& children; //vector of children pointers, of size n+1
+    std::vector<uint> keys; //vector of keys, should be of size n
+    std::vector<BNode*> children; //vector of children pointers, of size n+1
     BNode* parent;  //parent BNode
     std::map<uint, std::vector<Record::Record>> record; //map for key to record, only relevant for leaf
 
-    BNode(uint n) {
+    BNode(int n) {
       this->n = n;
-      std::vector<uint> a(n);
-      this->keys = a;
-      std::vector<BNode*> b(n+1, nullptr);
-      this->children = b;
       this->parent = nullptr;
       this->isLeaf = false;
+      keys(n, 0);
+      children(n+1, nullptr);
     }
 
     friend bool operator<(const BNode& a, const BNode& b) {
@@ -41,11 +39,11 @@ class BTree {
   private:
     int nodes;
     BNode* root; //root of the BTree
-    uint n;
+    int n;
     void balanceTree(bool leaf, BNode* temp);  //function to balanceTree after insertion and deletion, upddates the root accordingly
 
   public:
-    BTree(uint n); //constructor for BTree
+    BTree(int n); //constructor for BTree
     bool insertRecord(Record::Record record, uint key); //insert a new record and return it
     bool deleteRecord(uint key); //delete a record based on its key, returns True if sucessful delete
     std::vector<Record::Record> queryRecord(uint key); //return back a record based on its key
