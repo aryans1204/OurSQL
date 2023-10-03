@@ -149,6 +149,8 @@ void BTree::BTree::balanceTree(bool leaf, BNode* temp) {
         BNode* sub = new BNode(this->n);
         sub->keys.push_back(right->keys[0]);
         cout << "check\n";
+        display(left);
+        display(right);
         if (temp->parent == nullptr) {
             nodes++;
             root = sub;
