@@ -33,14 +33,13 @@ int main() {
             string tempLine;
 
             stringstream linestream(tp);
-            getline(linestream, tempLine,'\t');
             linestream >> record.date >> record.teamID >> record.pts >> record.fg_pct >> record.ft_pct >> record.fg3_pct >> record.ast >> record.reb >> record.win;
             tuple<void *, uint> dataRecord = bufPool.writeRecord(sizeof(record));
             dataset.push_back(dataRecord);
 
             void *rcdAdr = (uchar *)get<0>(dataRecord) + get<1>(dataRecord);
             memcpy(rcdAdr, &record, sizeof(record));
-            cout << rcdAdr << " " << record.teamID << '\n';
+            cout << rcdAdr << " " << record.pts << '\n';
             BTree.insertRecord(record, record.fg_pct);
             cout << "main.cpp after insert: ";
             BTree.display();
