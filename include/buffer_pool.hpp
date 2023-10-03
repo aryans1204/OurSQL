@@ -7,7 +7,6 @@
 
 namespace BufferPool {
 
-
 class BufPool{
 private:
     void *memPoolPtr;
@@ -21,6 +20,7 @@ private:
 
     int numAllocBlks;
     int numAvailBlks;
+    int numRecords;
 
 public:
     BufPool(size_t bufPoolSize, size_t blkSize);
@@ -41,13 +41,13 @@ public:
 
     int getNumAvailBlks();
 
+    int getNumRecords();
+
     bool deleteRecord(void *blockAddress, uint relOffset, std::size_t deletionSize);
 
     bool allocateBlk();
 
     tuple<void *, uint> writeRecord(uint recordSize);
-
-    bool deleteRecord(void *blockAddress, uint relOffset, std::size_t deletionSize);
 };
-};
+}
 #endif

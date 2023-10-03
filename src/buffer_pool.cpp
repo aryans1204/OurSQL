@@ -17,6 +17,7 @@ BufPool::BufPool(size_t bufPoolSize, size_t blkSize)
     this->bufPoolUsedRecords = 0;
     this->curBlkSizeUsed = 0;
     this->numAllocBlks = 0;
+    this->numRecords = 0;
     this->numAvailBlks = bufPoolSize / blkSize;
 
     //create memory pool of blocks and initialize all to NULL.
@@ -64,6 +65,11 @@ int BufPool::getNumAvailBlks()
     return numAvailBlks;
 }
 
+int BufPool::getNumRecords()
+{
+    return numRecords;
+}
+
 bool BufPool::allocateBlk() {       // check if there are still avail blocks & allocates block to buffer pool if true
     if (numAvailBlks > 0) {
         blkPtr = memPoolPtr + (numAllocBlks * blkSize);     // increment blkPtr by number of allocated blocks
@@ -90,6 +96,7 @@ tuple<void *, uint> BufPool::writeRecord(uint recordSize) {
 
     bufPoolUsedRecords += recordSize;   // update size of buffer pool that is used by records
     curBlkSizeUsed += recordSize;       // update size of block that is used
+    numRecords += 1;
 
     return recordAddress;
 }
@@ -105,6 +112,7 @@ bool BufPool::deleteRecord(void *blockAddress, uint relOffset, std::size_t delet
         //check if block is empty
         uchar tempBlk[blkSize];
         std::memset(tempBlk, '\0', blkSize);
+        numRecords -= 1;
         if (memcmp(blockAddress, tempBlk, blkSize)==0){
             bufPoolUsedBlks -= blkSize;
             numAllocBlks--;

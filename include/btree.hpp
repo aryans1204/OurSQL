@@ -52,6 +52,7 @@ class BTree {
     void display(); //prints the current state of the B+tree root node
     int height(BNode* l); //return height of the current tree
     int numNodes();
+    int getN();
     ~BTree(); //destructor;  
 };
 }
