@@ -49,7 +49,7 @@ class BTree {
     bool deleteRecord(float key); //delete a record based on its key, returns True if sucessful delete
     std::vector<Record::Record> queryRecord(float key); //return back a record based on its key
     std::vector<Record::Record> queryRecord(float lower, float upper);  //overloaded queryRecord with range based queries
-    void display(BNode* l); //prints the current state of the B+tree root node
+    void display(); //prints the current state of the B+tree root node
     int height(BNode* l); //return height of the current tree
     int numNodes();
     ~BTree(); //destructor;  
