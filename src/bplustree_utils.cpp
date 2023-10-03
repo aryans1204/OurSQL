@@ -36,7 +36,7 @@ BTree::BTree::~BTree()
     
 }
 
-std::vector<Record::Record> BTree::BTree::queryRecord(float key) {
+std::vector<Record> BTree::BTree::queryRecord(float key) {
     BNode* temp = this->root;
     while (!temp->isLeaf) {
         int ind = std::upper_bound(temp->keys.begin(), temp->keys.end(), key) - temp->keys.begin();
@@ -49,7 +49,7 @@ std::vector<Record::Record> BTree::BTree::queryRecord(float key) {
     else return temp->record[key];
 }
 
-std::vector<Record::Record> BTree::BTree::queryRecord(float lower, float upper) {
+std::vector<Record> BTree::BTree::queryRecord(float lower, float upper) {
     BNode* tempL = this->root;
     while (!tempL->isLeaf) {
         int ind2 = std::upper_bound(tempL->keys.begin(), tempL->keys.end(), lower) - tempL->keys.begin();
@@ -76,8 +76,9 @@ std::vector<Record::Record> BTree::BTree::queryRecord(float lower, float upper) 
     return ans;
 }
 
-bool BTree::BTree::insertRecord(Record::Record record, float key) {
+bool BTree::BTree::insertRecord(Record record, float key) {
     if (root == nullptr) {
+        cout << "insertRecord: root is null\n";
         root = new BNode(this->n);
         root->keys.push_back(key);
         root->isLeaf = true;
@@ -106,6 +107,8 @@ bool BTree::BTree::insertRecord(Record::Record record, float key) {
 
 void BTree::BTree::balanceTree(bool leaf, BNode* temp) {
     if (temp->keys.size() > this->n) {
+        cout << "balanceTree (full): ";
+        display();
         nodes++;
         int part;
         if (leaf) part = ceil((this->n+1)/2);
@@ -136,10 +139,10 @@ void BTree::BTree::balanceTree(bool leaf, BNode* temp) {
                 right->children[p] = temp->children[p];
             }
             for (auto p : left->children) {
-                p->parent = left;
+                p.second->parent = left;
             }
             for (auto p : right->children) {
-                p->parent = right;
+                p.second->parent = right;
             }
         }
     
@@ -168,12 +171,13 @@ void BTree::BTree::balanceTree(bool leaf, BNode* temp) {
             balanceTree(false, temp);
         }
         delete temp;
-
+        
     }
     else {
         return;
     }    
 }
+/*
 bool BTree::BTree::deleteRecord(float key) {
     BNode* temp = this->root;
     while (!temp->isLeaf) {
@@ -186,8 +190,8 @@ bool BTree::BTree::deleteRecord(float key) {
     temp->record.erase(key);
     balanceDel(true, temp);
     return true;
-}
-
+}*/
+/*
 void BTree::BTree::balanceDel(bool leaf, BNode* temp) {
     if (leaf) {
         if (temp->keys.size() >= (n+1)/2) return;
@@ -231,13 +235,26 @@ void BTree::BTree::balanceDel(bool leaf, BNode* temp) {
     else {
         if (temp->keys.size() >= n/2) return;
     } 
-}
+}*/
 void BTree::BTree::display() {
     if (this->root == nullptr) {
         cout << "B+ tree is empty\n";
         return;
     }
-    std::vector<uint> a = this->root->keys;
+    std::vector<float> a = this->root->keys;
+    cout << "test\n";
+    for (auto k : a) {
+        std::cout << "||" << " " << k << " " << "||->";
+    }
+    std::cout << std::endl;
+}
+
+void BTree::BTree::display(BNode* node) {
+    if (this->root == nullptr) {
+        cout << "B+ tree is empty\n";
+        return;
+    }
+    std::vector<float> a = node->keys;
     for (auto k : a) {
         std::cout << "||" << " " << k << " " << "||->";
     }
@@ -250,7 +267,7 @@ int BTree::BTree::height(BNode* l) {
     if (l == nullptr) return 0;
     if (l->isLeaf) return 1;
     for (auto p : l->children) {
-        ans = max(ans, height(p));
+        ans = max(ans, height(p.second));
     }
     return ans+1;
     

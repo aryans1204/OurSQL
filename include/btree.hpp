@@ -17,14 +17,14 @@ class BNode {
     std::vector<float> keys; //vector of keys, should be of size n
     std::map<float, BNode*> children; //vector of children pointers, of size n+1
     BNode* parent;  //parent BNode
-    std::map<float, std::vector<Record::Record>> record; //map for key to record, only relevant for leaf
+    std::map<float, std::vector<Record>> record; //map for key to record, only relevant for leaf
     BNode* lower;
 
     BNode(int n) {
       this->n = n;
       this->parent = nullptr;
       this->isLeaf = false;
-      keys(n);
+      std::vector<float> keys(n+1);
     }
 
     friend bool operator<(const BNode& a, const BNode& b) {
@@ -45,11 +45,12 @@ class BTree {
 
   public:
     BTree(int n); //constructor for BTree
-    bool insertRecord(Record::Record record, float key); //insert a new record and return it
+    bool insertRecord(Record record, float key); //insert a new record and return it
     bool deleteRecord(float key); //delete a record based on its key, returns True if sucessful delete
-    std::vector<Record::Record> queryRecord(float key); //return back a record based on its key
-    std::vector<Record::Record> queryRecord(float lower, float upper);  //overloaded queryRecord with range based queries
+    std::vector<Record> queryRecord(float key); //return back a record based on its key
+    std::vector<Record> queryRecord(float lower, float upper);  //overloaded queryRecord with range based queries
     void display(); //prints the current state of the B+tree root node
+    void display(BNode* node);
     int height(BNode* l); //return height of the current tree
     int numNodes();
     int getN();

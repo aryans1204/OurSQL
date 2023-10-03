@@ -26,8 +26,8 @@ int main() {
         string tp;
         int count = 0;
         getline(newfile, tp);   //ignore first line
-        while(getline(newfile, tp) /*&& count++ < 5*/){    //read data from file object and put it into string.
-            //cout << tp << "\n";
+        while(getline(newfile, tp) /*&& count++ < 10*/){    //read data from file object and put it into string.
+            cout << "next line\n";
 
             Record record;
             string tempLine;
@@ -40,8 +40,10 @@ int main() {
 
             void *rcdAdr = (uchar *)get<0>(dataRecord) + get<1>(dataRecord);
             memcpy(rcdAdr, &record, sizeof(record));
-            BTree.insertRecord(record, record.fg_pct);
             cout << rcdAdr << " " << record.teamID << '\n';
+            BTree.insertRecord(record, record.fg_pct);
+            cout << "main.cpp after insert: ";
+            BTree.display();
         }
 
         cout << "<------------------- Data file read ended ------------------->" << "\n" << "\n";
