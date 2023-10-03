@@ -40,8 +40,8 @@ int main() {
 
             void *rcdAdr = (uchar *)get<0>(dataRecord) + get<1>(dataRecord);
             memcpy(rcdAdr, &record, sizeof(record));
-            //BTree.insertRecord(record, record.teamID);
-            //cout << rcdAdr << " " << record.teamID << '\n';
+            BTree.insertRecord(record, record.fg_pct);
+            cout << rcdAdr << " " << record.teamID << '\n';
         }
 
         cout << "<------------------- Data file read ended ------------------->" << "\n" << "\n";
