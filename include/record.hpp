@@ -3,6 +3,8 @@
 
 #include <string>
 #include "definitions.hpp"
+namespace Record {
+
 
 typedef struct {
   //header
@@ -21,5 +23,6 @@ typedef struct {
   bool win;
 
 } Record;
+}
 
 #endif

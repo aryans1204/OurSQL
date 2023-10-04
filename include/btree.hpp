@@ -12,7 +12,7 @@ namespace BTree {
 
 class BNode {
   public:
-    int n=10;  //size of the BNode
+    int n;  //size of the BNode
     bool isLeaf; //whether node is leaf node
     std::vector<float> keys; //vector of keys, should be of size n
     std::map<float, BNode*> children; //vector of children pointers, of size n+1
@@ -24,7 +24,6 @@ class BNode {
       this->n = n;
       this->parent = nullptr;
       this->isLeaf = false;
-      std::vector<float> keys(n+1);
     }
 
     friend bool operator<(const BNode& a, const BNode& b) {
@@ -41,17 +40,17 @@ class BTree {
     int nodes;
     BNode* root; //root of the BTree
     int n;
-    void balanceTree(bool leaf, BNode* temp);  //function to balanceTree after insertion and deletion, upddates the root accordingly
+    std::pair<BNode*, BNode*> balanceTree(bool leaf, BNode* temp);  //function to balanceTree after insertion and deletion, upddates the root accordingly
+    int h;
 
   public:
     BTree(int n); //constructor for BTree
     bool insertRecord(Record record, float key); //insert a new record and return it
     bool deleteRecord(float key); //delete a record based on its key, returns True if sucessful delete
-    std::vector<Record> queryRecord(float key); //return back a record based on its key
-    std::vector<Record> queryRecord(float lower, float upper);  //overloaded queryRecord with range based queries
+    std::vector<Record::Record> queryRecord(float key, int& blks); //return back a record based on its key
+    std::vector<Record::Record> queryRecord(float lower, float upper, int& blks);  //overloaded queryRecord with range based queries
     void display(); //prints the current state of the B+tree root node
-    void display(BNode* node);
-    int height(BNode* l); //return height of the current tree
+    int height(); //return height of the current tree
     int numNodes();
     int getN();
     ~BTree(); //destructor;  

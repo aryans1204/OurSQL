@@ -5,9 +5,12 @@
 #include <fstream>
 #include <cstring>
 #include <sstream>
+#include <set>
 #include <tuple>
+#include <numeric>
 
 using namespace BufferPool;
+using namespace Record;
 using namespace std;
 
 int main() {
@@ -26,14 +29,17 @@ int main() {
         string tp;
         int count = 0;
         getline(newfile, tp);   //ignore first line
-        while(getline(newfile, tp) /*&& count++ < 10*/){    //read data from file object and put it into string.
-            cout << "next line\n";
+        set<float> s;
+        while(getline(newfile, tp) /*&& count++ < 5*/){    //read data from file object and put it into string.
+            //cout << tp << "\n";
 
-            Record record;
+            Record::Record record;
             string tempLine;
 
             stringstream linestream(tp);
-            linestream >> record.date >> record.teamID >> record.pts >> record.fg_pct >> record.ft_pct >> record.fg3_pct >> record.ast >> record.reb >> record.win;
+            getline(linestream, tempLine,'\t');
+            record.date = tempLine;
+            linestream >> record.teamID >> record.pts >> record.fg_pct >> record.ft_pct >> record.fg3_pct >> record.ast >> record.reb >> record.win;
             tuple<void *, uint> dataRecord = bufPool.writeRecord(sizeof(record));
             dataset.push_back(dataRecord);
 
@@ -41,26 +47,50 @@ int main() {
             memcpy(rcdAdr, &record, sizeof(record));
             cout << rcdAdr << " " << record.pts << '\n';
             BTree.insertRecord(record, record.fg_pct);
-            cout << "main.cpp after insert: ";
+            cout << rcdAdr << " " << record.fg_pct << '\n';
             BTree.display();
+            s.insert(record.fg_pct);
         }
-
         cout << "<------------------- Data file read ended ------------------->" << "\n" << "\n";
 
         cout << "<------------------- Storage Statistics (Experiment 1) ------------------->" << "\n";
         cout << "1. Number of records: " << bufPool.getNumRecords() << "\n";
-        cout << "2. Size of a record: " << sizeof(Record) << "\n";
-        cout << "3. Number of records stored in a block: " << bufPool.getBlkSize()/sizeof(Record) << "\n";
+        cout << "2. Size of a record: " << sizeof(Record::Record) << "\n";
+        cout << "3. Number of records stored in a block: " << bufPool.getBlkSize()/sizeof(Record::Record) << "\n";
         cout << "4. Number of allocated blocks: " << bufPool.getNumAllocBlks() << "\n\n";
 
         cout << "<------------------- B+ Tree Statistics (Experiment 2) ------------------->" << "\n";
-        cout << "1. Parameter n of B+ tree: " << BTree.getN() << "\n";
+        cout << "1. Parameter n of B+ tree: " << 48 << "\n";
         cout << "2. Number of nodes of the B+ tree: " << BTree.numNodes() << "\n";
-        cout << "3. Number of levels of the B+ tree: " << BTree.height(nullptr) << "\n";
+        cout << "3. Number of levels of the B+ tree: " << BTree.height() << "\n";
         cout << "4. Content of the root node (only the keys): ";
         BTree.display();
         cout << "\n";
 
+        cout << "<------------------- B+ Tree Querying (Experiment 3) ------------------->" << "\n";
+        int blks = 0;
+        auto a = BTree.queryRecord(0.5, blks);
+        cout << "Number of index blocks accessed: " << blks << endl;
+        cout << "Number of data blocks accessed: " << a.size() / (bufPool.getBlkSize()/sizeof(Record::Record)) << endl;
+        cout << "Average of FG3_PCT_HOME: ";
+        float sum = 0;
+        for (auto r : a) {
+            sum += r.fg3_pct;
+        }
+        cout << sum/a.size() << endl;
+        cout << "\n";
+        
+        cout << "<------------------- B+ Tree Range Based Querying (Experiment 4) ------------------->" << "\n";
+        blks = 0;
+        a = BTree.queryRecord(0.6, 1, blks);
+        cout << "Number of index blocks accessed: " << blks << endl;
+        cout << "Number of data blocks accessed: " << a.size() / (bufPool.getBlkSize()/sizeof(Record::Record)) << endl;
+        cout << "Average of FG3_PCT_HOME: ";
+        sum = 0;
+        for (auto r : a) {
+            sum += r.fg3_pct;
+        }
+        cout << sum/a.size() << endl;
         newfile.close();    //close the file object.
     }
 }
