@@ -37,6 +37,8 @@ public:
 
     std::size_t getCurBlkSizeUsed();
 
+    void *getmemPtr();
+
     int getNumAllocBlks();
 
     int getNumAvailBlks();

@@ -55,6 +55,11 @@ size_t BufPool::getCurBlkSizeUsed(){
     return curBlkSizeUsed;
 }
 
+void *BufferPool::BufPool::getmemPtr()
+{
+    return memPoolPtr;
+}
+
 int BufPool::getNumAllocBlks()
 {
     return numAllocBlks;

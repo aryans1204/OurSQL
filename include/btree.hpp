@@ -17,7 +17,7 @@ class BNode {
     std::vector<float> keys; //vector of keys, should be of size n
     std::map<float, BNode*> children; //vector of children pointers, of size n+1
     BNode* parent;  //parent BNode
-    std::map<float, std::vector<Record>> record; //map for key to record, only relevant for leaf
+    std::map<float, std::vector<Record::Record>> record; //map for key to record, only relevant for leaf
     BNode* lower;
 
     BNode(int n) {
@@ -45,7 +45,7 @@ class BTree {
 
   public:
     BTree(int n); //constructor for BTree
-    bool insertRecord(Record record, float key); //insert a new record and return it
+    bool insertRecord(Record::Record record, float key); //insert a new record and return it
     bool deleteRecord(float key); //delete a record based on its key, returns True if sucessful delete
     std::vector<Record::Record> queryRecord(float key, int& blks); //return back a record based on its key
     std::vector<Record::Record> queryRecord(float lower, float upper, int& blks);  //overloaded queryRecord with range based queries
