@@ -45,6 +45,7 @@ int main() {
 
             void *rcdAdr = (uchar *)get<0>(dataRecord) + get<1>(dataRecord);
             memcpy(rcdAdr, &record, sizeof(record));
+            cout << rcdAdr << " " << record.pts << '\n';
             BTree.insertRecord(record, record.fg_pct);
             cout << rcdAdr << " " << record.fg_pct << '\n';
             BTree.display();
