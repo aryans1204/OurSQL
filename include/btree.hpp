@@ -41,6 +41,7 @@ class BTree {
     BNode* root; //root of the BTree
     int n;
     std::pair<BNode*, BNode*> balanceTree(bool leaf, BNode* temp);  //function to balanceTree after insertion and deletion, upddates the root accordingly
+    void balanceDel(bool leaf, BNode* temp, float ks, int ind);
     int h;
 
   public:
