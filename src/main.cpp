@@ -19,7 +19,7 @@ int main() {
 
     BufPool bufPool(104857600, 400);    //pool size = 100MB, block size = 400B
 
-    BTree::BTree BTree(10);
+    BTree::BTree BTree(48);
 
     fstream newfile;
 
@@ -116,7 +116,7 @@ int main() {
         cout << "sum: " << sum << ", count: " << count << endl;
         cout << "Running time for query: " << t << " clicks" << "(" << ((float) t)/CLOCKS_PER_SEC << "s)" << endl;
         cout << "\n";
-        
+
         cout << "<------------------- B+ Tree Range Based Querying (Experiment 4) ------------------->" << "\n";
         blks = 0;
         t = clock();
@@ -159,6 +159,13 @@ int main() {
             }
         }
         cout << recordCount << endl;
+
+        cout << "<------------------- B+ Tree Deleting Records (Experiment 5) ------------------->" << "\n";
+        a = BTree.queryRecord(0.35, blks);
+        cout << a.size() << endl;
+        BTree.deleteRecord(0.35);
+        a = BTree.queryRecord(0.35, blks);
+        cout << a .size() << endl;
 
         newfile.close();    //close the file object.
     }
