@@ -121,6 +121,7 @@ bool BufPool::deleteRecord(void *blockAddress, uint relOffset, std::size_t delet
         if (memcmp(blockAddress, tempBlk, blkSize)==0){
             bufPoolUsedBlks -= blkSize;
             numAllocBlks--;
+            numAvailBlks++;
         }
 
         return true;
