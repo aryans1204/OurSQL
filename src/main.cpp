@@ -25,6 +25,7 @@ int main() {
 
     vector<tuple<void *, uint>> dataset;
     vector<vector<Record::Record>> memVector;
+    cout << "test";
 
     cout << "<------------------- Data file read started ------------------->" << "\n" << "\n";
 
@@ -163,9 +164,37 @@ int main() {
         cout << "<------------------- B+ Tree Deleting Records (Experiment 5) ------------------->" << "\n";
         a = BTree.queryRecord(0.35, blks);
         cout << a.size() << endl;
+
+        t = clock();
         BTree.deleteRecord(0.35);
+        t = clock() - t;
+
         a = BTree.queryRecord(0.35, blks);
         cout << a .size() << endl;
+
+        cout << "Number of nodes in updated B+ tree: " << BTree.numNodes() << endl;
+        cout << "Number of levels in updated B+ tree: " << BTree.height() << endl;
+        cout << "Content of the root node (only the keys): ";
+        BTree.display();
+        cout << "Running time of record deletions: " << t << " clicks" << "(" << ((float) t)/CLOCKS_PER_SEC << "s)" << endl;
+
+        //Using brute force
+        cout << "\n<----Using brute-force method---->" << endl;
+        sum = 0;
+        count = 0;
+        t = clock();
+        for (int i = 0; i < memVector.size(); i++) {
+            for (int j = 0; j < memVector[i].size(); j++) {
+                if (memVector[i][j].fg_pct <= 0.35) {
+                    memVector[i].erase(memVector[i].begin() + j);
+                }
+            }
+        }
+        t = clock() - t;
+
+        cout << "Number of data blocks accessed: " << memVector.size() << endl;
+        cout << "Running time of record deletions: " << t << " clicks" << "(" << ((float) t)/CLOCKS_PER_SEC << "s)" << endl;
+
 
         newfile.close();    //close the file object.
     }
