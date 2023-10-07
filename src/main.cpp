@@ -9,6 +9,8 @@
 #include <tuple>
 #include <numeric>
 #include <time.h>
+#include <algorithm>
+#include <cmath>
 
 using namespace BufferPool;
 using namespace Record;
@@ -24,7 +26,7 @@ int main() {
     fstream newfile;
 
     vector<tuple<void *, uint>> dataset;
-    vector<vector<Record::Record>> memVector;
+    vector<Record::Record> memVector;
     cout << "test";
 
     cout << "<------------------- Data file read started ------------------->" << "\n" << "\n";
@@ -51,20 +53,17 @@ int main() {
             void *rcdAdr = (uchar *)get<0>(dataRecord) + get<1>(dataRecord);
             memcpy(rcdAdr, &record, sizeof(record));
 
-            if (memVector.empty() || memVector.back().size() == 6) {
-                vector<Record::Record> block;
-                block.push_back(record);
-                memVector.push_back(block);
-            }
-            else{
-                memVector.back().push_back(record);
-            }
+            memVector.push_back(record);
+
             //cout << rcdAdr << " " << record.pts << '\n';
             BTree.insertRecord(record, record.fg_pct);
             //cout << rcdAdr << " " << record.fg_pct << '\n';
             //BTree.display();
             s.insert(record.fg_pct);
         }
+        std::sort (memVector.begin(), memVector.end(), [](const Record::Record& lhs, const Record::Record& rhs) {
+            return lhs.fg_pct < rhs.fg_pct;
+        });
         cout << "<------------------- Data file read ended ------------------->" << "\n" << "\n";
 
         cout << "<------------------- Storage Statistics (Experiment 1) ------------------->" << "\n";
@@ -100,19 +99,22 @@ int main() {
         
         //Using brute force
         cout << "\n<----Using brute-force method---->" << endl;
-        t = clock();
         sum = 0;
         count = 0;
+        int index = 1;
+        t = clock();
         for (int i = 0; i < memVector.size(); i++) {
-            for (int j = 0; j < memVector[i].size(); j++) {
-                if (memVector[i][j].fg_pct == 0.5) {
-                    sum += memVector[i][j].fg3_pct;
-                    count++;
-                }
+            if (memVector[i].fg_pct == 0.5) {
+                sum += memVector[i].fg3_pct;
+                count++;
             }
+            if (memVector[i].fg_pct > 0.5) {
+                break;
+            }
+            index++;
         }
         t = clock() - t;
-        cout << "Number of data blocks accessed: " << memVector.size() << endl;
+        cout << "Number of data blocks accessed: " << ceil(index/6) << endl;
         cout << "Average of FG3_PCT_HOME: " << sum/count << endl;
         cout << "sum: " << sum << ", count: " << count << endl;
         cout << "Running time for query: " << t << " clicks" << "(" << ((float) t)/CLOCKS_PER_SEC << "s)" << endl;
@@ -139,34 +141,40 @@ int main() {
         cout << "\n<----Using brute-force method---->" << endl;
         sum = 0;
         count = 0;
+        index = 1;
         t = clock();
         for (int i = 0; i < memVector.size(); i++) {
-            for (int j = 0; j < memVector[i].size(); j++) {
-                if (memVector[i][j].fg_pct >= 0.6 && memVector[i][j].fg_pct <= 1) {
-                    sum += memVector[i][j].fg3_pct;
-                    count++;
-                }
+            if (memVector[i].fg_pct >= 0.6 && memVector[i].fg_pct <= 1) {
+                sum += memVector[i].fg3_pct;
+                count++;
             }
+            if (memVector[i].fg_pct > 1) {
+                break;
+            }
+            index++;
         }
         t = clock() - t;
-        cout << "Number of data blocks accessed: " << memVector.size() << endl;
+        cout << "Number of data blocks accessed: " << ceil(index/6) << endl;
         cout << "Average of FG3_PCT_HOME: " << sum/count << endl;
         cout << "sum: " << sum << ", count: " << count << endl;
         cout << "Running time for query: " << t << " clicks" << "(" << ((float) t)/CLOCKS_PER_SEC << "s)" << endl;
-        int recordCount = 0;
-        for (int i = 0; i < memVector.size(); i++) {
-            for (int j = 0; j < memVector[i].size(); j++) {
-                recordCount++;
-            }
-        }
-        cout << recordCount << endl;
 
         cout << "<------------------- B+ Tree Deleting Records (Experiment 5) ------------------->" << "\n";
         a = BTree.queryRecord(0.35, blks);
         cout << a.size() << endl;
 
         t = clock();
-        BTree.deleteRecord(0.35);
+        a = BTree.queryRecord(0, 0.35, blks);
+        for (int i = 0; i < memVector.size(); i++) {
+            if (memVector[i].fg_pct <= 0.35 && s.find(memVector[i].fg_pct) != s.end()) {
+                cout << "Deleted: " << memVector[i].fg_pct << endl;
+                BTree.deleteRecord(memVector[i].fg_pct);
+                s.erase(memVector[i].fg_pct);
+            }
+        }
+        for (int i = 0; i < a.size(); i++) {
+            BTree.deleteRecord(a[i].fg_pct);
+        }
         t = clock() - t;
 
         a = BTree.queryRecord(0.35, blks);
@@ -182,19 +190,21 @@ int main() {
         cout << "\n<----Using brute-force method---->" << endl;
         sum = 0;
         count = 0;
+        index = 1;
         t = clock();
         for (int i = 0; i < memVector.size(); i++) {
-            for (int j = 0; j < memVector[i].size(); j++) {
-                if (memVector[i][j].fg_pct <= 0.35) {
-                    memVector[i].erase(memVector[i].begin() + j);
-                }
+            if (memVector[i].fg_pct <= 0.35) {
+                memVector.erase(memVector.begin() + i);
             }
+            if (memVector[i].fg_pct > 0.35) {
+                break;
+            }
+            index++;
         }
         t = clock() - t;
 
-        cout << "Number of data blocks accessed: " << memVector.size() << endl;
+        cout << "Number of data blocks accessed: " << ceil(index/6) << endl;
         cout << "Running time of record deletions: " << t << " clicks" << "(" << ((float) t)/CLOCKS_PER_SEC << "s)" << endl;
-
 
         newfile.close();    //close the file object.
     }
