@@ -57,17 +57,16 @@ std::vector<Record::Record> BTree::BTree::queryRecord(float key, int& blks) {
     else return temp->record[key];
 }
 
-std::vector<Record::Record> BTree::BTree::queryRecord(float lower, float upper, int& blks) {
-
+std::vector<Record::Record> BTree::BTree::queryRecord(float low, float upper, int& blks) {
     BNode* tempL = this->root;
     blks++;
     while (!tempL->isLeaf) {
-        int ind = std::upper_bound(tempL->keys.begin(), tempL->keys.end(), lower) - tempL->keys.begin();
+        int ind = std::upper_bound(tempL->keys.begin(), tempL->keys.end(), low) - tempL->keys.begin();
         if (ind >= tempL->keys.size()) {
             tempL = tempL->children[tempL->keys.back()];
         }
         else if (ind == 0) tempL = tempL->lower;
-        else if (lower == tempL->keys[ind]) tempL = tempL->children[tempL->keys[ind]];
+        else if (low == tempL->keys[ind]) tempL = tempL->children[tempL->keys[ind]];
         else tempL = tempL->children[tempL->keys[ind-1]];
         blks++;
     }
@@ -75,8 +74,8 @@ std::vector<Record::Record> BTree::BTree::queryRecord(float lower, float upper, 
     std::vector<Record::Record> ans;
     int i = 0;
     std::vector<Record::Record> c;
-    while (tempL && tempL->keys[i] <= upper) {
-        if (tempL->keys[i] < lower) {
+    while (tempL) {
+        if (tempL->keys[i] < low || tempL->keys[i] > upper) {
             i++;
             continue;
         }
@@ -105,7 +104,6 @@ bool BTree::BTree::insertRecord(Record::Record record, float key) {
     }
     BNode* temp = this->root;
     while (!temp->isLeaf) {
-        if (temp->keys.size() > n) std::cout << "FULLup!!" << std::endl;
         //std::cout << "WHY" << std::endl;
         int ind = std::upper_bound(temp->keys.begin(), temp->keys.end(), key) - temp->keys.begin();
         //std::cout << "IND " << ind << std::endl;
@@ -117,7 +115,6 @@ bool BTree::BTree::insertRecord(Record::Record record, float key) {
         else temp = temp->children[temp->keys[ind-1]];
         //std::cout << temp->keys.size() << std::endl;
     }
-    if (temp->keys.size() > n) std::cout << "FULL!!" << std::endl;
     if (temp != root && temp->keys.size() < (n+1)/2) std::cout << temp->keys.size() << std::endl;
     if (temp->record.find(key) != temp->record.end()) {
         temp->record[key].push_back(record);
@@ -161,8 +158,8 @@ std::pair<BTree::BNode*, BTree::BNode*> BTree::BTree::balanceTree(bool leaf, BNo
                 right->record[k] = temp->record[k];
             }
             left->children[2] = right;
-            right->children[1] = left;
-            left->children[1] = temp->children[1];
+            //right->children[1] = left;
+            //left->children[1] = temp->children[1];
             right->children[2] = temp->children[2];
             //std::cout << "Done" << std::endl;
         }
@@ -189,7 +186,6 @@ std::pair<BTree::BNode*, BTree::BNode*> BTree::BTree::balanceTree(bool leaf, BNo
         float kl = right->keys[0];
         if (temp->parent == nullptr) {
             //std::cout << "temp parent" << std::endl;
-            BNode* al = root;
             if (!leaf) right->children.erase(right->keys[0]);
             if (!leaf) right->keys.erase(right->keys.begin());
             nodes++;
@@ -210,7 +206,7 @@ std::pair<BTree::BNode*, BTree::BNode*> BTree::BTree::balanceTree(bool leaf, BNo
         if (temp != root) {
             if (!leaf) right->keys.erase(right->keys.begin());
             if (!leaf) right->children.erase(cand);
-            if (temp->parent->lower == temp) temp->lower = left;
+            if (temp->parent->lower == temp) temp->parent->lower = left;
             for (auto b : temp->parent->children) {
                 if (b.second == temp) {
                     temp->parent->children[b.first] = left;
@@ -227,7 +223,7 @@ std::pair<BTree::BNode*, BTree::BNode*> BTree::BTree::balanceTree(bool leaf, BNo
             right->parent = l.second;
             return make_pair(left, right);
         }
-        delete temp;
+        //delete temp;
     }
     else {
         return make_pair(temp, temp);

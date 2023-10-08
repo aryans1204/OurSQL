@@ -21,13 +21,12 @@ int main() {
 
     BufPool bufPool(104857600, 400);    //pool size = 100MB, block size = 400B
 
-    BTree::BTree BTree(48);
+    BTree::BTree BTree(31);
 
     fstream newfile;
 
     vector<tuple<void *, uint>> dataset;
     vector<Record::Record> memVector;
-    cout << "test";
 
     cout << "<------------------- Data file read started ------------------->" << "\n" << "\n";
 
@@ -65,7 +64,7 @@ int main() {
             return lhs.fg_pct < rhs.fg_pct;
         });
         cout << "<------------------- Data file read ended ------------------->" << "\n" << "\n";
-
+        int init = (int) s.size();
         cout << "<------------------- Storage Statistics (Experiment 1) ------------------->" << "\n";
         cout << "1. Number of records: " << bufPool.getNumRecords() << "\n";
         cout << "2. Size of a record: " << sizeof(Record::Record) << "\n";
@@ -73,7 +72,7 @@ int main() {
         cout << "4. Number of allocated blocks: " << bufPool.getNumAllocBlks() << "\n\n";
 
         cout << "<------------------- B+ Tree Statistics (Experiment 2) ------------------->" << "\n";
-        cout << "1. Parameter n of B+ tree: " << 48 << "\n";
+        cout << "1. Parameter n of B+ tree: " << 31 << "\n";
         cout << "2. Number of nodes of the B+ tree: " << BTree.numNodes() << "\n";
         cout << "3. Number of levels of the B+ tree: " << BTree.height() << "\n";
         cout << "4. Content of the root node (only the keys): ";
@@ -122,18 +121,31 @@ int main() {
 
         cout << "<------------------- B+ Tree Range Based Querying (Experiment 4) ------------------->" << "\n";
         blks = 0;
-        t = clock();
+        int ans = 0;
         a = BTree.queryRecord(0.6, 1, blks);
+        t = clock();
+        int temp = 0;
+        set<float> sets;
+        sum = 0;
+        for (int i = 0; i < memVector.size(); i++) {
+            if (memVector[i].fg_pct >= 0.6 && memVector[i].fg_pct <= 1 && sets.find(memVector[i].fg_pct) == sets.end()) {
+                a = BTree.queryRecord(memVector[i].fg_pct, temp);
+                ans += a.size();
+                for (auto r : a) {
+                    sum += r.fg3_pct;
+                }
+                sets.insert(memVector[i].fg_pct);
+            }
+            if (memVector[i].fg_pct > 1) {
+                break;
+            }
+        }
         t = clock() - t;
         cout << "Number of index blocks accessed: " << blks << endl;
-        cout << "Number of data blocks accessed: " << a.size() / (bufPool.getBlkSize()/sizeof(Record::Record)) << endl;
+        cout << "Number of data blocks accessed: " << ans / (bufPool.getBlkSize()/sizeof(Record::Record)) << endl;
         cout << "Average of FG3_PCT_HOME: ";
-        sum = 0;
-        for (auto r : a) {
-            sum += r.fg3_pct;
-        }
-        cout << sum/a.size() << endl;
-        cout << "sum: " << sum << ", count: " << a.size() << endl;
+        cout << sum/ans << endl;
+        cout << "sum: " << sum << ", count: " << ans << endl;
         cout << "Running time for query: " << t << " clicks" << "(" << ((float) t)/CLOCKS_PER_SEC << "s)" << endl;
 
         
@@ -160,24 +172,15 @@ int main() {
         cout << "Running time for query: " << t << " clicks" << "(" << ((float) t)/CLOCKS_PER_SEC << "s)" << endl;
 
         cout << "<------------------- B+ Tree Deleting Records (Experiment 5) ------------------->" << "\n";
-        a = BTree.queryRecord(0.35, blks);
-        cout << a.size() << endl;
 
         t = clock();
-        //a = BTree.queryRecord(0, 0.35, blks);
         for (int i = 0; i < memVector.size(); i++) {
             if (memVector[i].fg_pct <= 0.35 && s.find(memVector[i].fg_pct) != s.end()) {
                 BTree.deleteRecord(memVector[i].fg_pct);
                 s.erase(memVector[i].fg_pct);
             }
         }
-        /*for (int i = 0; i < a.size(); i++) {
-            BTree.deleteRecord(a[i].fg_pct);
-        }*/
         t = clock() - t;
-
-        //a = BTree.queryRecord(0.35, blks);
-        //cout << a .size() << endl;
 
         cout << "Number of nodes in updated B+ tree: " << BTree.numNodes() << endl;
         cout << "Number of levels in updated B+ tree: " << BTree.height() << endl;
