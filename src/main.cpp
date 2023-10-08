@@ -205,32 +205,6 @@ int main() {
         cout << "Number of data blocks accessed: " << ceil(index/6) << endl;
         cout << "Running time of record deletions: " << t << " clicks" << "(" << ((float) t)/CLOCKS_PER_SEC << "s)" << endl;
 
-        cout << "Number of nodes in updated B+ tree: " << BTree.numNodes() << endl;
-        cout << "Number of levels in updated B+ tree: " << BTree.height() << endl;
-        cout << "Content of the root node (only the keys): ";
-        BTree.display();
-        cout << "Running time of record deletions: " << t << " clicks" << "(" << ((float) t)/CLOCKS_PER_SEC << "s)" << endl;
-
-        //Using brute force
-        cout << "\n<----Using brute-force method---->" << endl;
-        sum = 0;
-        count = 0;
-        index = 1;
-        t = clock();
-        for (int i = 0; i < memVector.size(); i++) {
-            if (memVector[i].fg_pct <= 0.35) {
-                memVector.erase(memVector.begin() + i);
-            }
-            if (memVector[i].fg_pct > 0.35) {
-                break;
-            }
-            index++;
-        }
-        t = clock() - t;
-
-        cout << "Number of data blocks accessed: " << ceil(index/6) << endl;
-        cout << "Running time of record deletions: " << t << " clicks" << "(" << ((float) t)/CLOCKS_PER_SEC << "s)" << endl;
-
         newfile.close();    //close the file object.
     }
 }
